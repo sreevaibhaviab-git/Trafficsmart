@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Traffic Smart - COA Mini Project</title>
+  <link rel="stylesheet" href="styles.css?v=town3" />
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">25ESCS04 · Computer Organization and Architecture</p>
+      <h1>Traffic Smart</h1>
+      <p class="subtitle">Smart Traffic Signal Controller + Processor Performance Simulator</p>
+    </div>
+    <div class="status-wrap">
+      <span id="runDot" class="status-dot paused"></span>
+      <span id="runStatus">Paused</span>
+    </div>
+  </header>
+
+  <main class="layout">
+    <section class="panel controls">
+      <div class="panel-heading">
+        <h2>Traffic Inputs</h2>
+        <span class="badge">Live Controls</span>
+      </div>
+
+      <label>North Queue <strong id="northValue">12</strong>
+        <input id="north" type="range" min="0" max="40" value="12" />
+      </label>
+      <label>South Queue <strong id="southValue">10</strong>
+        <input id="south" type="range" min="0" max="40" value="10" />
+      </label>
+      <label>East Queue <strong id="eastValue">24</strong>
+        <input id="east" type="range" min="0" max="40" value="24" />
+      </label>
+      <label>West Queue <strong id="westValue">18</strong>
+        <input id="west" type="range" min="0" max="40" value="18" />
+      </label>
+
+      <div class="control-group">
+        <span class="label-title">Controller Mode</span>
+        <div class="segmented">
+          <button id="adaptiveBtn" class="active">Adaptive</button>
+          <button id="fixedBtn">Fixed 20s</button>
+        </div>
+      </div>
+
+      <div class="button-row">
+        <button id="startBtn" class="primary">Start</button>
+        <button id="pauseBtn">Pause</button>
+        <button id="resetBtn">Reset</button>
+      </div>
+
+      <div class="traffic-actions">
+        <button id="rushBtn">Rush Hour</button>
+        <button id="randomBtn">Randomize</button>
+      </div>
+      <p class="interaction-hint">Tip: drag inside the town view to pan around. Scroll to zoom. Click a road entry to inject extra traffic.</p>
+
+      <div class="emergency-box">
+        <h3>Emergency Interrupt</h3>
+        <p>Simulates a high-priority interrupt from an ambulance or fire vehicle.</p>
+        <div class="emergency-grid">
+          <button data-emergency="N">North</button>
+          <button data-emergency="S">South</button>
+          <button data-emergency="E">East</button>
+          <button data-emergency="W">West</button>
+        </div>
+      </div>
+
+      <div class="algorithm-card">
+        <h3>Adaptive Algorithm</h3>
+        <code>green = clamp(10 + 0.5 × phaseQueue, 10, 35)</code>
+        <p>The controller compares North-South demand with East-West demand and gives the busier phase a suitable green duration.</p>
+      </div>
+    </section>
+
+    <section class="simulation-wrap">
+      <div class="sim-header">
+        <div>
+          <span class="muted">Current Phase</span>
+          <strong id="phaseText">East-West GREEN</strong>
+        </div>
+        <div class="timer-card">
+          <span>Remaining</span>
+          <strong id="timerText">00:00</strong>
+        </div>
+      </div>
+
+      <div class="town-shell">
+        <div class="town-toolbar">
+          <span>Town View · drag to pan · scroll to zoom</span>
+          <div class="toolbar-actions">
+            <button id="centerViewBtn">Center View</button>
+          </div>
+        </div>
+        <canvas id="townCanvas" width="1280" height="760" aria-label="Interactive small-town traffic simulation"></canvas>
+      </div>
+
+      <div class="event-log">
+        <div class="panel-heading">
+          <h2>Execution Trace</h2>
+          <button id="clearLog">Clear</button>
+        </div>
+        <div id="logArea" class="log-area"></div>
+      </div>
+    </section>
+
+    <section class="panel metrics">
+      <div class="panel-heading">
+        <h2>Processor Performance</h2>
+        <span class="badge">Educational Model</span>
+      </div>
+
+      <div class="metric-grid">
+        <div class="metric"><span>Instructions</span><strong id="instructions">0</strong></div>
+        <div class="metric"><span>Clock Cycles</span><strong id="cycles">0</strong></div>
+        <div class="metric"><span>Current CPI</span><strong id="cpi">1.20</strong></div>
+        <div class="metric"><span>CPU Time</span><strong id="cpuTime">0.000 ms</strong></div>
+        <div class="metric"><span>Cache Hits</span><strong id="cacheHits">0</strong></div>
+        <div class="metric"><span>Cache Misses</span><strong id="cacheMisses">0</strong></div>
+        <div class="metric"><span>Interrupts</span><strong id="interrupts">0</strong></div>
+        <div class="metric"><span>Vehicles Cleared</span><strong id="cleared">0</strong></div>
+      </div>
+
+      <div class="comparison-card">
+        <h3>Traffic Performance</h3>
+        <div class="compare-row"><span>Total Queue</span><strong id="totalQueue">64 vehicles</strong></div>
+        <div class="compare-row"><span>Estimated Fixed Wait</span><strong id="fixedWait">48.0 s</strong></div>
+        <div class="compare-row"><span>Estimated Adaptive Wait</span><strong id="adaptiveWait">34.0 s</strong></div>
+        <div class="compare-row highlight"><span>Estimated Improvement</span><strong id="improvement">29.2%</strong></div>
+      </div>
+
+      <div class="coa-card">
+        <h3>COA Concepts Demonstrated</h3>
+        <ul>
+          <li><b>Registers:</b> hold queue counts and timer values.</li>
+          <li><b>ALU:</b> compares demand and calculates green duration.</li>
+          <li><b>Control Unit:</b> selects signal phase.</li>
+          <li><b>Instruction Cycle:</b> read → compare → calculate → update.</li>
+          <li><b>Interrupt:</b> emergency vehicle overrides normal sequence.</li>
+          <li><b>Performance:</b> instruction count, CPI, cycles and CPU time.</li>
+        </ul>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    Mini Project · AB Sree Vaibhavi · 25BTRCA001 · CSE-AI · Semester III
+  </footer>
+  <script src="app.js?v=town3"></script>
+</body>
+</html>
